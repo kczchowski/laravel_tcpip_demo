@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Coffee\RequestFactory;
 use React\Socket\ConnectionInterface;
 
 /**
@@ -20,6 +21,8 @@ class Connection
     /** @var string */
     private $remoteAddress;
 
+    protected $requestFactory;
+
     /**
      * Connection constructor.
      * @param \React\Socket\ConnectionInterface $connection
@@ -30,7 +33,19 @@ class Connection
         $this->localAddress = $connection->getLocalAddress();
         $this->remoteAddress = $connection->getRemoteAddress();
 
+        $this->requestFactory = new RequestFactory();
+
         $this->registerConnectionEvents();
+    }
+
+    /**
+     * Write the data to the connection
+     * @param $data
+     */
+    protected function write($data)
+    {
+        $this->echo($data, '>>');
+        $this->rawConnection->write($data . PHP_EOL);
     }
 
     /**
@@ -51,7 +66,16 @@ class Connection
     {
         return function ($data) {
             $data = trim($data);
-            $this->echo($data, '>>');
+
+            $request = $this->requestFactory->make($data);
+            if($request !== null){
+                $this->echo($data, '<<');
+                if($request->hasResponse()){
+                    $this->write($request->getResponse());
+                }
+            }else{
+                $this->echo('Unknown format: '.$data, '!!');
+            }
         };
     }
 
