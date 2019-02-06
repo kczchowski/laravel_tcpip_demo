@@ -3,6 +3,7 @@
 namespace App\Coffee;
 
 use App\Coffee\Request\HelloRequest;
+use App\Coffee\Request\StatusRequest;
 use App\RequestContract;
 
 class RequestFactory
@@ -13,7 +14,8 @@ class RequestFactory
     public function __construct()
     {
         $this->availableRequests = collect([
-            HelloRequest::class
+            HelloRequest::class,
+            StatusRequest::class
         ]);
     }
 
