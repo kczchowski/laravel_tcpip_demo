@@ -30,12 +30,12 @@ class StatusRequest implements RequestContract
 
     public function hasResponse(): bool
     {
-        return true;
+        return false;
     }
 
     public function getResponse()
     {
-        return "{$this->id};WELCOME";
+        return null;
     }
 
 }
